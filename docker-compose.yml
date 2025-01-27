@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  nginx:
+    image: nginx:alpine
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./certs:/etc/nginx/certs:ro
+    ports:
+      - "443:443"
+      - "80:80"
+    depends_on:
+      - monobudget
+    restart: unless-stopped
+
+  monobudget:
+    build: .
+    volumes:
+      - ./settings.yml:/opt/app/settings.yml
+    environment:
+      - WEBHOOK_PORT=${WEBHOOK_PORT:-8080}  # adjust this port as needed
+      - SET_WEBHOOK=true
+      - MONO_WEBHOOK_URL=${MONO_WEBHOOK_URL:-https://yourdomain.com/webhook/monobank}
+      - JAVA_OPTIONS=-Xmx512m -Xms256m  # adjust Java options as needed
+    ports:
+      - "${WEBHOOK_PORT:-8080}:8080"  # maps container port to host port
+    restart: unless-stopped

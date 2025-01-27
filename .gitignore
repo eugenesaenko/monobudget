@@ -9,4 +9,3 @@ settings*.json
 settings*.yml
 import-config*.yml
 retries.json
-docker-compose.yml
